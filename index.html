@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PEACE LOVE </title>
+    <title>PEACE CHAT — Read Receipts + Auto Admin Chat</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -71,71 +71,21 @@
         .app-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at 20% 30%, #1a2a32, #0a0f14); padding: 12px; }
         .whatsapp-container { width: 1400px; max-width: 100%; height: 95vh; background: #111b21; border-radius: 32px; display: flex; overflow: hidden; }
         .sidebar { width: 340px; background: #111b21; border-right: 1px solid #222e35; display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
-        .sidebar-header { padding: 20px 18px; background: #202c33; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2a3942; flex-direction: column; align-items: flex-start; gap: 12px; }
-        .profile-area { display: flex; align-items: center; gap: 12px; width: 100%; }
+        .sidebar-header { padding: 20px 18px; background: #202c33; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2a3942; }
+        .profile-area { display: flex; align-items: center; gap: 12px; }
         .avatar-large { width: 46px; height: 46px; background: linear-gradient(135deg, #25D366, #128C7E); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; }
         .user-text h4 { font-weight: 600; font-size: 16px; }
         .user-text p { font-size: 12px; color: #8696a0; }
-        .online-stats {
-            background: #0a141e;
-            border-radius: 20px;
-            padding: 8px 14px;
-            width: 100%;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .online-badge {
-            background: #25D366;
-            color: #111b21;
-            border-radius: 30px;
-            padding: 4px 12px;
-            font-weight: bold;
-            font-size: 11px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .online-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-        .online-user-chip {
-            background: #202c33;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            border-left: 2px solid #25D366;
-        }
-        .online-user-chip i { font-size: 8px; color: #25D366; }
-        .no-online { color: #8696a0; font-size: 11px; }
-        
         .chats-list { flex: 1; overflow-y: auto; }
         .chat-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid #1f2c33; position: relative; }
         .chat-item:hover { background: #2a3942; }
         .chat-item.active { background: #2a3942; }
-        .chat-avatar { width: 52px; height: 52px; background: linear-gradient(145deg, #2b5270, #1e3a4a); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; position: relative; }
-        .online-dot {
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            width: 12px;
-            height: 12px;
-            background: #25D366;
-            border-radius: 50%;
-            border: 2px solid #111b21;
-        }
+        .chat-avatar { width: 52px; height: 52px; background: linear-gradient(145deg, #2b5270, #1e3a4a); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; }
         .chat-details { flex: 1; }
-        .chat-name { font-weight: 600; font-size: 16px; display: flex; align-items: center; gap: 6px; }
-        .online-text { font-size: 10px; color: #25D366; }
-        .phone-badge { font-size: 10px; color: #8696a0; margin-top: 2px; }
+        .chat-name { font-weight: 600; font-size: 16px; }
+        .phone-badge { font-size: 10px; color: #25D366; margin-top: 2px; }
+        
+        /* unread badge */
         .unread-badge {
             background: #25D366;
             color: #111b21;
@@ -149,17 +99,16 @@
             justify-content: center;
             padding: 0 6px;
             margin-left: 8px;
+            box-shadow: 0 0 0 2px #111b21;
         }
         
         /* Main Chat */
         .main-chat { flex: 1; display: flex; flex-direction: column; background: #0b141a; }
         .chat-header { padding: 12px 20px; background: #202c33; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #2a3942; }
         .back-button { display: none; background: none; border: none; color: #25D366; font-size: 24px; cursor: pointer; }
-        .contact-avatar { width: 48px; height: 48px; background: linear-gradient(145deg, #2b5270, #1e3a4a); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; position: relative; }
+        .contact-avatar { width: 48px; height: 48px; background: linear-gradient(145deg, #2b5270, #1e3a4a); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
         .contact-info { flex: 1; }
         .contact-name { font-size: 18px; font-weight: 600; }
-        .contact-status { font-size: 12px; color: #8696a0; }
-        .contact-status.online { color: #25D366; }
         
         /* Messages Area */
         .messages-area {
@@ -200,6 +149,7 @@
         }
         .message-time { font-size: 10px; color: #8696a0; }
         .read-status { font-size: 11px; color: #25D366; }
+        .read-status i { font-size: 11px; }
         
         .reply-context {
             font-size: 11px;
@@ -213,6 +163,9 @@
             gap: 6px;
             align-items: center;
         }
+        .reply-context i { font-size: 10px; color: #25D366; }
+        .reply-context span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
         .swipe-reply-indicator {
             position: absolute;
             left: 10px;
@@ -317,11 +270,6 @@
                         <p>Chats</p>
                     </div>
                 </div>
-                <!-- Online Dashboard (only visible to admin) -->
-                <div id="onlineDashboard" class="online-stats" style="display: none;">
-                    <div class="online-badge"><i class="fas fa-circle"></i> ONLINE NOW</div>
-                    <div id="onlineUsersList" class="online-list">--</div>
-                </div>
             </div>
             <div class="chats-list" id="chatsList">
                 <div class="empty-state"><i class="fas fa-comments"></i><br/>No contacts yet</div>
@@ -333,7 +281,6 @@
                 <div class="contact-avatar" id="chatAvatar">💬</div>
                 <div class="contact-info">
                     <div class="contact-name" id="chatName">Select a chat</div>
-                    <div id="chatStatus" class="contact-status">offline</div>
                 </div>
             </div>
             <div id="replyIndicator" class="reply-indicator">
@@ -355,7 +302,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
     import { getFirestore, collection, addDoc, query, where, getDocs, onSnapshot, orderBy, setDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
-    import { arrayUnion as firestoreArrayUnion } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCyXIg9uHCy0Vd6CaAkM8koK_2RZ-eqr7Q",
@@ -375,8 +321,6 @@
     let currentChatWith = null;
     let replyingToMsg = null;
     let currentMsgUnsub = null;
-    let onlineStatusListener = null;
-    let onlineUsersMap = new Map(); // userId -> { name, lastSeen, isOnline }
 
     // Audio sounds
     const sendSound = new Audio();
@@ -387,108 +331,31 @@
     function playSendSound() { sendSound.play().catch(e => console.log("Sound error")); }
     function playReceiveSound() { receiveSound.play().catch(e => console.log("Sound error")); }
 
-    // Online status management
-    async function updateUserOnlineStatus(userId, isOnline) {
-        const userRef = doc(db, "users", userId);
-        await updateDoc(userRef, {
-            isOnline: isOnline,
-            lastSeen: new Date().toISOString()
-        }).catch(() => {});
-    }
-    
-    function startOnlineHeartbeat() {
-        if (!currentUser) return;
-        // Update online status every 30 seconds
-        const updateStatus = async () => {
-            await updateUserOnlineStatus(currentUser.id, true);
-        };
-        updateStatus();
-        const interval = setInterval(updateStatus, 30000);
-        // On page close/beforeunload set offline
-        window.addEventListener("beforeunload", () => {
-            updateUserOnlineStatus(currentUser.id, false);
-        });
-        return interval;
-    }
-    
-    // Listen to all users online status (for admin dashboard)
-    function listenOnlineStatus() {
-        if (!currentUser || !currentUser.isAdmin) return;
-        const q = query(collection(db, "users"), where("isAdmin", "==", false));
-        onlineStatusListener = onSnapshot(q, (snapshot) => {
-            onlineUsersMap.clear();
-            snapshot.forEach(docSnap => {
-                const data = docSnap.data();
-                const isOnlineNow = data.isOnline === true;
-                const lastSeen = data.lastSeen ? new Date(data.lastSeen) : null;
-                let isOnline = false;
-                if (isOnlineNow) {
-                    // Check if lastSeen within 60 seconds
-                    if (lastSeen && (new Date() - lastSeen) < 60000) isOnline = true;
-                    else if (lastSeen === null) isOnline = true;
-                    else isOnline = true;
-                }
-                onlineUsersMap.set(docSnap.id, {
-                    name: data.name,
-                    isOnline: isOnline,
-                    lastSeen: lastSeen
-                });
+    // Mark message as read (update readBy array)
+    async function markMessageAsRead(chatId, messageId, userId) {
+        const msgRef = doc(db, "chats", chatId, "messages", messageId);
+        try {
+            await updateDoc(msgRef, {
+                readBy: arrayUnion(userId)
             });
-            updateAdminOnlineDashboard();
-            refreshChatListOnlineIndicators();
-        });
+        } catch(e) { console.warn("read receipt error", e); }
     }
     
-    function updateAdminOnlineDashboard() {
-        const dashboard = document.getElementById('onlineDashboard');
-        if (!currentUser?.isAdmin) return;
-        dashboard.style.display = 'flex';
-        const onlineUsers = Array.from(onlineUsersMap.values()).filter(u => u.isOnline === true);
-        const container = document.getElementById('onlineUsersList');
-        if (onlineUsers.length === 0) {
-            container.innerHTML = '<span class="no-online"><i class="fas fa-user-slash"></i> No one online</span>';
-        } else {
-            container.innerHTML = onlineUsers.map(u => `<span class="online-user-chip"><i class="fas fa-circle"></i> ${escapeHtml(u.name)}</span>`).join('');
-        }
-    }
+    // Helper for arrayUnion
+    const arrayUnion = (userId) => {
+        return { __arrayUnion: userId };
+    };
     
-    function refreshChatListOnlineIndicators() {
-        if (!currentUser) return;
-        document.querySelectorAll('.chat-item').forEach(item => {
-            const userId = item.dataset.id;
-            const isUserOnline = onlineUsersMap.get(userId)?.isOnline || false;
-            let onlineSpan = item.querySelector('.online-text');
-            const nameDiv = item.querySelector('.chat-name');
-            if (!nameDiv) return;
-            if (isUserOnline && currentUser.isAdmin) {
-                if (!onlineSpan) {
-                    const span = document.createElement('span');
-                    span.className = 'online-text';
-                    span.innerHTML = '<i class="fas fa-circle" style="font-size: 8px;"></i> online';
-                    nameDiv.appendChild(span);
-                } else {
-                    onlineSpan.innerHTML = '<i class="fas fa-circle" style="font-size: 8px;"></i> online';
-                }
-                // Add dot on avatar
-                const avatarDiv = item.querySelector('.chat-avatar');
-                if (avatarDiv && !avatarDiv.querySelector('.online-dot')) {
-                    const dot = document.createElement('div');
-                    dot.className = 'online-dot';
-                    avatarDiv.appendChild(dot);
-                }
-            } else {
-                if (onlineSpan) onlineSpan.remove();
-                const avatarDiv = item.querySelector('.chat-avatar');
-                const dot = avatarDiv?.querySelector('.online-dot');
-                if (dot) dot.remove();
-            }
-        });
-    }
+    // Override updateDoc with arrayUnion workaround (use Firestore server-side)
+    // But firestore SDK supports arrayUnion directly, we'll import it
+    import { arrayUnion as firestoreArrayUnion } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
     
     async function markMessageAsReadFirestore(chatId, messageId, userId) {
         const msgRef = doc(db, "chats", chatId, "messages", messageId);
         try {
-            await updateDoc(msgRef, { readBy: firestoreArrayUnion(userId) });
+            await updateDoc(msgRef, {
+                readBy: firestoreArrayUnion(userId)
+            });
         } catch(e) { console.warn("read receipt error", e); }
     }
 
@@ -500,7 +367,7 @@
     }
 
     async function saveUser(userId, name, phone, isAdmin) {
-        await setDoc(doc(db, "users", userId), { name, phone, isAdmin, createdAt: new Date().toISOString(), isOnline: true });
+        await setDoc(doc(db, "users", userId), { name, phone, isAdmin, createdAt: new Date().toISOString() });
     }
 
     async function sendMessage(toId, text, replyTo = null) {
@@ -510,7 +377,7 @@
             text: text.trim(),
             senderId: currentUser.id,
             timestamp: new Date().toISOString(),
-            readBy: [currentUser.id]
+            readBy: [currentUser.id]  // sender has read it
         };
         if (replyTo) {
             messageData.replyTo = {
@@ -526,21 +393,27 @@
     function loadMessages(chatWithId, chatWithName) {
         const chatId = [currentUser.id, chatWithId].sort().join("_");
         const q = query(collection(db, "chats", chatId, "messages"), orderBy("timestamp", "asc"));
+        
         const unsub = onSnapshot(q, (snapshot) => {
             const container = document.getElementById("messagesArea");
             if (!container) return;
+            
+            // Mark messages as read automatically when this chat is open
             snapshot.docChanges().forEach(change => {
                 if (change.type === "added") {
                     const msg = change.doc.data();
+                    // if message is from other user and not read by current user, mark read
                     if (msg.senderId !== currentUser.id && (!msg.readBy || !msg.readBy.includes(currentUser.id))) {
                         markMessageAsReadFirestore(chatId, change.doc.id, currentUser.id);
                     }
                 }
             });
+            
             if (snapshot.empty) {
                 container.innerHTML = `<div class="empty-state"><i class="fas fa-comment-dots"></i><br/>No messages yet</div>`;
                 return;
             }
+            
             let html = "";
             snapshot.forEach(docMsg => {
                 const msg = docMsg.data();
@@ -550,9 +423,10 @@
                 if (msg.replyTo) {
                     replyHtml = `<div class="reply-context"><i class="fas fa-reply"></i> <span>${escapeHtml(msg.replyTo.text.substring(0, 60))}</span></div>`;
                 }
+                // read receipt indicator: double check if read by receiver (for sent messages)
                 let readStatusHtml = "";
                 if (isSent) {
-                    const isRead = msg.readBy && msg.readBy.length > 1;
+                    const isRead = msg.readBy && msg.readBy.length > 1; // more than just sender
                     readStatusHtml = `<div class="read-status">${isRead ? '<i class="fas fa-check-double"></i>' : '<i class="fas fa-check"></i>'}</div>`;
                 }
                 html += `
@@ -561,11 +435,16 @@
                          data-msg-text="${escapeHtml(msg.text)}"
                          data-msg-sender="${msg.senderId}"
                          data-msg-sender-name="${isSent ? currentUser.name : chatWithName}">
-                        <div class="swipe-reply-indicator"><i class="fas fa-reply"></i> Reply</div>
+                        <div class="swipe-reply-indicator">
+                            <i class="fas fa-reply"></i> Reply
+                        </div>
                         <div class="message-bubble">
                             ${replyHtml}
                             <div class="message-text">${escapeHtml(msg.text)}</div>
-                            <div class="message-footer"><div class="message-time">${time}</div>${readStatusHtml}</div>
+                            <div class="message-footer">
+                                <div class="message-time">${time}</div>
+                                ${readStatusHtml}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -579,22 +458,34 @@
 
     function initSwipeToReply() {
         const messages = document.querySelectorAll('.message-wrapper');
-        let touchStartX = 0, currentElement = null;
+        let touchStartX = 0;
+        let currentElement = null;
         messages.forEach(msg => {
-            msg.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; currentElement = msg; msg.classList.remove('showing-reply'); });
+            msg.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                currentElement = msg;
+                msg.classList.remove('showing-reply');
+            });
             msg.addEventListener('touchmove', (e) => {
                 if (!currentElement) return;
                 const diffX = e.touches[0].clientX - touchStartX;
                 const isSent = msg.classList.contains('sent');
-                if ((isSent && diffX < -40) || (!isSent && diffX > 40)) msg.classList.add('showing-reply');
-                else msg.classList.remove('showing-reply');
+                if ((isSent && diffX < -40) || (!isSent && diffX > 40)) {
+                    msg.classList.add('showing-reply');
+                } else {
+                    msg.classList.remove('showing-reply');
+                }
             });
             msg.addEventListener('touchend', (e) => {
                 if (!currentElement) return;
                 const diffX = e.changedTouches[0].clientX - touchStartX;
                 const isSent = msg.classList.contains('sent');
-                if ((isSent && diffX < -50) || (!isSent && diffX > 50)) {
-                    setReplyTo({ id: msg.dataset.msgId, text: msg.dataset.msgText, senderId: msg.dataset.msgSender, senderName: msg.dataset.msgSenderName });
+                const isSwipingToReply = (isSent && diffX < -50) || (!isSent && diffX > 50);
+                if (isSwipingToReply) {
+                    const msgText = msg.dataset.msgText;
+                    const msgSender = msg.dataset.msgSender;
+                    const msgSenderName = msg.dataset.msgSenderName;
+                    setReplyTo({ id: msg.dataset.msgId, text: msgText, senderId: msgSender, senderName: msgSenderName });
                 }
                 msg.classList.remove('showing-reply');
                 currentElement = null;
@@ -609,36 +500,40 @@
         indicator.style.display = 'flex';
         document.getElementById('messageInput').focus();
     }
-    function cancelReply() { replyingToMsg = null; document.getElementById('replyIndicator').style.display = 'none'; }
 
+    function cancelReply() {
+        replyingToMsg = null;
+        document.getElementById('replyIndicator').style.display = 'none';
+    }
+
+    // Function to auto-open admin chat for non-admin users
     async function autoOpenAdminChat() {
         if (currentUser.isAdmin) return;
+        // Find admin user (Peace50)
         const adminQuery = query(collection(db, "users"), where("phone", "==", ADMIN_PHONE));
         const adminSnap = await getDocs(adminQuery);
         if (!adminSnap.empty) {
-            const adminId = adminSnap.docs[0].id;
+            const adminDoc = adminSnap.docs[0];
+            const adminId = adminDoc.id;
+            const adminName = adminDoc.data().name;
+            // Simulate click on admin chat item after DOM ready
             setTimeout(() => {
-                const el = document.querySelector(`.chat-item[data-id="${adminId}"]`);
-                if (el) el.click();
-                else {
+                const adminChatElement = document.querySelector(`.chat-item[data-id="${adminId}"]`);
+                if (adminChatElement) {
+                    adminChatElement.click();
+                } else {
+                    // fallback: wait for re-render
                     const observer = new MutationObserver(() => {
-                        const e = document.querySelector(`.chat-item[data-id="${adminId}"]`);
-                        if (e) { e.click(); observer.disconnect(); }
+                        const el = document.querySelector(`.chat-item[data-id="${adminId}"]`);
+                        if (el) {
+                            el.click();
+                            observer.disconnect();
+                        }
                     });
                     observer.observe(document.getElementById('chatsList'), { childList: true, subtree: true });
                     setTimeout(() => observer.disconnect(), 3000);
                 }
             }, 800);
-        }
-    }
-
-    function updateContactStatusInHeader(contactId) {
-        if (!contactId) return;
-        const isOnline = onlineUsersMap.get(contactId)?.isOnline || false;
-        const statusDiv = document.getElementById('chatStatus');
-        if (statusDiv) {
-            statusDiv.innerHTML = isOnline ? '<i class="fas fa-circle" style="font-size: 8px;"></i> online' : 'offline';
-            statusDiv.className = isOnline ? 'contact-status online' : 'contact-status';
         }
     }
 
@@ -650,17 +545,18 @@
             let contacts = currentUser.isAdmin ? allUsers.filter(u => !u.isAdmin && u.id !== currentUser.id) : allUsers.filter(u => u.isAdmin === true);
             const container = document.getElementById("chatsList");
             if (!contacts.length) { container.innerHTML = `<div class="empty-state"><i class="fas fa-users"></i><br/>No contacts yet</div>`; return; }
+            
             container.innerHTML = contacts.map(c => {
                 const showPhone = !c.isAdmin;
-                const isUserOnline = onlineUsersMap.get(c.id)?.isOnline || false;
                 return `<div class="chat-item" data-id="${c.id}" data-name="${escapeHtml(c.name)}">
-                            <div class="chat-avatar">${c.name.charAt(0)}${isUserOnline && currentUser.isAdmin ? '<div class="online-dot"></div>' : ''}</div>
+                            <div class="chat-avatar">${c.name.charAt(0)}</div>
                             <div class="chat-details">
-                                <div class="chat-name">${escapeHtml(c.name)} ${isUserOnline && currentUser.isAdmin ? '<span class="online-text"><i class="fas fa-circle" style="font-size: 8px;"></i> online</span>' : ''}</div>
+                                <div class="chat-name">${escapeHtml(c.name)}</div>
                                 ${showPhone ? `<div class="phone-badge"><i class="fas fa-phone-alt"></i> ${escapeHtml(c.phone)}</div>` : ''}
                             </div>
                         </div>`;
             }).join("");
+            
             document.querySelectorAll(".chat-item").forEach(el => {
                 el.addEventListener("click", () => {
                     if (currentMsgUnsub) currentMsgUnsub();
@@ -669,7 +565,6 @@
                     currentChatWith = { id: cid, name: cname };
                     document.getElementById("chatName").innerText = cname;
                     document.getElementById("chatAvatar").innerHTML = cname.charAt(0);
-                    updateContactStatusInHeader(cid);
                     cancelReply();
                     currentMsgUnsub = loadMessages(cid, cname);
                     document.querySelectorAll(".chat-item").forEach(c => c.classList.remove("active"));
@@ -677,12 +572,37 @@
                     if (window.innerWidth <= 780) { document.querySelector(".sidebar").style.display = "none"; document.querySelector(".main-chat").style.display = "flex"; }
                 });
             });
-            if (!currentUser.isAdmin) autoOpenAdminChat();
-            refreshChatListOnlineIndicators();
+            
+            // Auto-open admin chat for non-admin users after contacts load
+            if (!currentUser.isAdmin) {
+                autoOpenAdminChat();
+            }
         });
     }
 
     function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+
+    // Keep cursor in input after sending
+    function setupPersistentCursor() {
+        const input = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const originalSendHandler = async () => {
+            const text = input.value.trim();
+            if (text && currentChatWith) {
+                let replyData = null;
+                if (replyingToMsg) {
+                    replyData = { text: replyingToMsg.text, senderId: replyingToMsg.senderId, senderName: replyingToMsg.senderName };
+                }
+                await sendMessage(currentChatWith.id, text, replyData);
+                input.value = "";
+                cancelReply();
+                // Focus stays on input and cursor remains
+                input.focus();
+            }
+        };
+        sendBtn.onclick = originalSendHandler;
+        input.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); originalSendHandler(); } });
+    }
 
     document.getElementById("authBtn").onclick = async () => {
         const name = document.getElementById("authName").value.trim();
@@ -696,31 +616,33 @@
             user = { id: userId, name, phone, isAdmin };
         }
         currentUser = user;
-        await updateUserOnlineStatus(currentUser.id, true);
-        startOnlineHeartbeat();
         document.getElementById("sidebarUserName").innerText = currentUser.name;
         document.getElementById("authScreen").style.display = "none";
         document.getElementById("mainApp").style.display = "flex";
-        if (currentUser.isAdmin) listenOnlineStatus();
         loadUsers();
-        const sendHandler = async () => {
+        setupPersistentCursor();
+        document.getElementById("cancelReplyBtn").addEventListener("click", cancelReply);
+        
+        // Also make sure send button works if clicked again after dynamic changes
+        document.getElementById("sendBtn").onclick = async () => {
             const input = document.getElementById("messageInput");
             const text = input.value.trim();
             if (text && currentChatWith) {
                 let replyData = null;
-                if (replyingToMsg) replyData = { text: replyingToMsg.text, senderId: replyingToMsg.senderId, senderName: replyingToMsg.senderName };
+                if (replyingToMsg) {
+                    replyData = { text: replyingToMsg.text, senderId: replyingToMsg.senderId, senderName: replyingToMsg.senderName };
+                }
                 await sendMessage(currentChatWith.id, text, replyData);
                 input.value = "";
                 cancelReply();
                 input.focus();
             }
         };
-        document.getElementById("sendBtn").onclick = sendHandler;
-        document.getElementById("messageInput").addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); sendHandler(); } });
-        document.getElementById("cancelReplyBtn").addEventListener("click", cancelReply);
+        document.getElementById("messageInput").addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); document.getElementById("sendBtn").click(); } });
     };
-    document.getElementById("backBtn").onclick = () => { document.querySelector(".sidebar").style.display = "flex"; document.querySelector(".main-chat").style.display = "flex"; };
-    const handleMobile = () => { if (window.innerWidth <= 780) document.getElementById("backBtn").style.display = "flex"; else document.getElementById("backBtn").style.display = "none"; };
+    
+    document.getElementById("backBtn").onclick = () => { document.querySelector(".sidebar").style.display = "flex"; document.querySelector(".main-chat").style.display = "none"; };
+    const handleMobile = () => { if (window.innerWidth <= 780) { document.getElementById("backBtn").style.display = "flex"; } else { document.getElementById("backBtn").style.display = "none"; document.querySelector(".sidebar").style.display = "flex"; document.querySelector(".main-chat").style.display = "flex"; } };
     window.addEventListener("resize", handleMobile); handleMobile();
 </script>
 </body>
