@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title> CHAT WITH PEACE </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', -apple-system, sans-serif;
+            user-select: none;
+        }
+        body {
+            background: #0a0f14;
+            height: 100vh;
+            overflow: hidden;
+            color: #e9edef;
+        }
+        /* Auth Screen */
+        .auth-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 30% 40%, #1a2a32, #0a0f14);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .auth-card {
+            background: #202c33;
+            border-radius: 32px;
+            padding: 40px 32px;
+            width: 380px;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        .auth-card h2 { margin-bottom: 8px; font-size: 24px; }
+        .auth-card p { color: #8696a0; margin-bottom: 28px; font-size: 14px; }
+        .auth-card input {
+            width: 100%;
+            background: #2a3942;
+            border: none;
+            border-radius: 28px;
+            padding: 14px 20px;
+            color: #e9edef;
+            font-size: 15px;
+            outline: none;
+            margin-bottom: 16px;
+        }
+        .auth-btn {
+            background: #25D366;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 28px;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .admin-note { margin-top: 16px; font-size: 12px; color: #8696a0; }
+        
+        /* Main App */
+        .app-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at 20% 30%, #1a2a32, #0a0f14); padding: 12px; }
+        .whatsapp-container { width: 1400px; max-width: 100%; height: 95vh; background: #111b21; border-radius: 32px; display: flex; overflow: hidden; }
+        .sidebar { width: 340px; background: #111b21; border-right: 1px solid #222e35; display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
+        .sidebar-header { padding: 20px 18px; background: #202c33; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2a3942; }
+        .profile-area { display: flex; align-items: center; gap: 12px; }
+        .avatar-large { width: 46px; height: 46px; background: linear-gradient(135deg, #25D366, #128C7E); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; }
+        .user-text h4 { font-weight: 600; font-size: 16px; }
+        .user-text p { font-size: 12px; color: #8696a0; }
+        .chats-list { flex: 1; overflow-y: auto; }
+        .chat-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid #1f2c33; }
+        .chat-item:hover { background: #2a3942; }
+        .chat-item.active { background: #2a3942; }
+        .chat-avatar { width: 52px; height: 52px; background: linear-gradient(145deg, #2b5270, #1e3a4a); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+        .chat-details { flex: 1; }
+        .chat-name { font-weight: 600; font-size: 16px; }
+        .phone-badge { font-size: 10px; color: #25D366; margin-top: 2px; }
+        
+        /* Main Chat */
+        .main-chat { flex: 1; display: flex; flex-direction: column; background: #0b141a; }
+        .chat-header { padding: 12px 20px; background: #202c33; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #2a3942; }
+        .back-button { display: none; background: none; border: none; color: #25D366; font-size: 24px; cursor: pointer; }
+        .contact-avatar { width: 48px; height: 48px; background: linear-gradient(145deg, #2b5270, #1e3a4a); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .contact-info { flex: 1; }
+        .contact-name { font-size: 18px; font-weight: 600; }
+        
+        /* Messages Area with Swipe Support */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .message-wrapper {
+            display: flex;
+            width: 100%;
+            animation: fadeSlideUp 0.25s ease;
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+        .message-wrapper.swiping-left {
+            transform: translateX(-60px);
+        }
+        .message-wrapper.swiping-right {
+            transform: translateX(60px);
+        }
+        .message-wrapper.sent { justify-content: flex-end; }
+        .message-wrapper.received { justify-content: flex-start; }
+        
+        .message-bubble {
+            max-width: 70%;
+            border-radius: 18px;
+            padding: 10px 14px;
+            background: #202c33;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .message-wrapper.sent .message-bubble { background: linear-gradient(135deg, #005c4b, #004d3d); border-bottom-right-radius: 4px; }
+        .message-wrapper.received .message-bubble { background: #202c33; border-bottom-left-radius: 4px; }
+        
+        .message-text { font-size: 14px; line-height: 1.45; word-break: break-word; }
+        .message-time { font-size: 10px; color: #8696a0; text-align: right; margin-top: 6px; }
+        
+        /* Reply Context inside message */
+        .reply-context {
+            font-size: 11px;
+            color: #8696a0;
+            margin-bottom: 6px;
+            padding: 4px 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            border-left: 3px solid #25D366;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .reply-context i { font-size: 10px; color: #25D366; }
+        .reply-context span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Swipe Reply Indicator */
+        .swipe-reply-indicator {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #25D366;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .message-wrapper.received .swipe-reply-indicator { left: 10px; right: auto; }
+        .message-wrapper.sent .swipe-reply-indicator { right: 10px; left: auto; }
+        .message-wrapper.showing-reply .swipe-reply-indicator { display: flex; }
+        
+        /* Reply Indicator on Input */
+        .reply-indicator {
+            background: #2a3942;
+            margin: 0 16px 8px 16px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #25D366;
+            border-left: 3px solid #25D366;
+        }
+        .reply-indicator button {
+            background: none;
+            border: none;
+            color: #8696a0;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        
+        .input-area {
+            background: #202c33;
+            padding: 12px 18px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            border-top: 1px solid #2a3942;
+        }
+        .message-input {
+            flex: 1;
+            background: #2a3942;
+            border: none;
+            border-radius: 28px;
+            padding: 12px 20px;
+            color: #e9edef;
+            font-size: 15px;
+            outline: none;
+        }
+        .send-btn {
+            background: #25D366;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .empty-state { text-align: center; padding: 60px 24px; color: #8696a0; }
+        
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #1e2a32; }
+        ::-webkit-scrollbar-thumb { background: #3b4b54; border-radius: 10px; }
+        @media (max-width: 780px) { .sidebar { width: 280px; } .message-bubble { max-width: 85%; } }
+    </style>
+</head>
+<body>
+
+<div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+        <div class="avatar-large" style="margin: 0 auto 20px; width: 70px; height: 70px; font-size: 32px;">
+            <i class="fab fa-whatsapp"></i>
+        </div>
+        <h2> CHAT WITH PEACE </h2>
+        <p>Enter your details to start</p>
+        <input type="text" id="authName" placeholder="Your full name">
+        <input type="tel" id="authPhone" placeholder="Your Phone number">
+        <button class="auth-btn" id="authBtn">Continue →</button>
+        <div class="admin-note"><i class="fas fa-shield-alt"></i> ."</div>
+    </div>
+</div>
+
+<div id="mainApp" class="app-wrapper" style="display: none;">
+    <div class="whatsapp-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="profile-area">
+                    <div class="avatar-large"><i class="fab fa-whatsapp"></i></div>
+                    <div class="user-text">
+                        <h4 id="sidebarUserName">Loading...</h4>
+                        <p>Chats</p>
+                    </div>
+                </div>
+            </div>
+            <div class="chats-list" id="chatsList">
+                <div class="empty-state"><i class="fas fa-comments"></i><br/>No contacts yet</div>
+            </div>
+        </div>
+        <div class="main-chat">
+            <div class="chat-header">
+                <button class="back-button" id="backBtn"><i class="fas fa-arrow-left"></i></button>
+                <div class="contact-avatar" id="chatAvatar">💬</div>
+                <div class="contact-info">
+                    <div class="contact-name" id="chatName">Select a chat</div>
+                </div>
+            </div>
+            <div id="replyIndicator" class="reply-indicator">
+                <i class="fas fa-reply"></i> <span id="replyingToText">Replying💬 to...</span>
+                <button id="cancelReplyBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="messages-area" id="messagesArea">
+                <div class="empty-state"><i class="fas fa-comment-dots"></i><br/>Select a contact</div>
+            </div>
+            <div class="input-area">
+                <input type="text" class="message-input" id="messageInput" placeholder="Type a message💬...">
+                <button class="send-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs, onSnapshot, orderBy, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCyXIg9uHCy0Vd6CaAkM8koK_2RZ-eqr7Q",
+        authDomain: "peace-6e84b.firebaseapp.com",
+        projectId: "peace-6e84b",
+        storageBucket: "peace-6e84b.firebasestorage.app",
+        messagingSenderId: "1098917969597",
+        appId: "1:1098917969597:web:2ffac4d3914bce0a5901d4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const ADMIN_PHONE = "Peace50";
+    let currentUser = null;
+    let currentChatWith = null;
+    let replyingToMsg = null;
+
+    // Create audio elements for sounds
+    const sendSound = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
+    const receiveSound = new Audio("https://www.soundjay.com/misc/sounds/notification-3.mp3");
+    // Use alternative reliable sounds
+    sendSound.src = "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c8c8f7b6c6.mp3?filename=message-sent-103176.mp3";
+    receiveSound.src = "https://cdn.pixabay.com/download/audio/2022/03/10/audio_9f9f0b6c5a.mp3?filename=notification-126526.mp3";
+    
+    function playSendSound() { sendSound.play().catch(e => console.log("Sound play error:", e)); }
+    function playReceiveSound() { receiveSound.play().catch(e => console.log("Sound play error:", e)); }
+
+    // Sign in anonymously
+    await signInAnonymously(auth);
+    
+    onAuthStateChanged(auth, async (user) => {
+        if (user) console.log("Signed in:", user.uid);
+    });
+
+    async function findUserByPhone(phone) {
+        const q = query(collection(db, "users"), where("phone", "==", phone));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+        return null;
+    }
+
+    async function saveUser(userId, name, phone, isAdmin) {
+        await setDoc(doc(db, "users", userId), { name, phone, isAdmin, createdAt: new Date().toISOString() });
+    }
+
+    async function sendMessage(toId, text, replyTo = null) {
+        if (!text.trim() || !currentUser) return;
+        const chatId = [currentUser.id, toId].sort().join("_");
+        const messageData = {
+            text: text.trim(),
+            senderId: currentUser.id,
+            timestamp: new Date().toISOString()
+        };
+        if (replyTo) {
+            messageData.replyTo = {
+                text: replyTo.text,
+                senderId: replyTo.senderId,
+                senderName: replyTo.senderName
+            };
+        }
+        await addDoc(collection(db, "chats", chatId, "messages"), messageData);
+        playSendSound();
+    }
+
+    function loadMessages(chatWithId, chatWithName) {
+        const chatId = [currentUser.id, chatWithId].sort().join("_");
+        const q = query(collection(db, "chats", chatId, "messages"), orderBy("timestamp", "asc"));
+        
+        onSnapshot(q, (snapshot) => {
+            const container = document.getElementById("messagesArea");
+            if (!container) return;
+            
+            // Check if new message is from other person
+            let hasNewFromOther = false;
+            snapshot.docChanges().forEach(change => {
+                if (change.type === "added") {
+                    const msg = change.doc.data();
+                    if (msg.senderId !== currentUser.id && msg.senderId === chatWithId) {
+                        hasNewFromOther = true;
+                    }
+                }
+            });
+            if (hasNewFromOther) playReceiveSound();
+            
+            if (snapshot.empty) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-comment-dots"></i><br/>No messages yet</div>`;
+                return;
+            }
+            
+            let html = "";
+            snapshot.forEach(doc => {
+                const msg = doc.data();
+                const isSent = msg.senderId === currentUser.id;
+                const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                let replyHtml = "";
+                if (msg.replyTo) {
+                    replyHtml = `<div class="reply-context"><i class="fas fa-reply"></i> <span>${escapeHtml(msg.replyTo.text.substring(0, 60))}</span></div>`;
+                }
+                html += `
+                    <div class="message-wrapper ${isSent ? 'sent' : 'received'}" 
+                         data-msg-id="${doc.id}"
+                         data-msg-text="${escapeHtml(msg.text)}"
+                         data-msg-sender="${msg.senderId}"
+                         data-msg-sender-name="${isSent ? currentUser.name : chatWithName}">
+                        <div class="swipe-reply-indicator">
+                            <i class="fas fa-reply"></i> Reply
+                        </div>
+                        <div class="message-bubble">
+                            ${replyHtml}
+                            <div class="message-text">${escapeHtml(msg.text)}</div>
+                            <div class="message-time">${time}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+            
+            // Add swipe-to-reply listeners
+            initSwipeToReply();
+        });
+    }
+
+    function initSwipeToReply() {
+        const messages = document.querySelectorAll('.message-wrapper');
+        let touchStartX = 0;
+        let currentElement = null;
+        
+        messages.forEach(msg => {
+            msg.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                currentElement = msg;
+                msg.classList.remove('showing-reply');
+            });
+            
+            msg.addEventListener('touchmove', (e) => {
+                if (!currentElement) return;
+                const diffX = e.touches[0].clientX - touchStartX;
+                // Swipe left for sent messages, swipe right for received messages
+                const isSent = msg.classList.contains('sent');
+                if ((isSent && diffX < -40) || (!isSent && diffX > 40)) {
+                    msg.classList.add('showing-reply');
+                } else {
+                    msg.classList.remove('showing-reply');
+                }
+            });
+            
+            msg.addEventListener('touchend', (e) => {
+                if (!currentElement) return;
+                const diffX = e.changedTouches[0].clientX - touchStartX;
+                const isSent = msg.classList.contains('sent');
+                const isSwipingToReply = (isSent && diffX < -50) || (!isSent && diffX > 50);
+                
+                if (isSwipingToReply) {
+                    const msgId = msg.dataset.msgId;
+                    const msgText = msg.dataset.msgText;
+                    const msgSender = msg.dataset.msgSender;
+                    const msgSenderName = msg.dataset.msgSenderName;
+                    setReplyTo({ id: msgId, text: msgText, senderId: msgSender, senderName: msgSenderName });
+                }
+                msg.classList.remove('showing-reply');
+                currentElement = null;
+            });
+        });
+    }
+
+    function setReplyTo(msg) {
+        replyingToMsg = msg;
+        const indicator = document.getElementById('replyIndicator');
+        document.getElementById('replyingToText').innerHTML = `<i class="fas fa-reply"></i> Replying to: "${msg.text.substring(0, 40)}"`;
+        indicator.style.display = 'flex';
+        document.getElementById('messageInput').focus();
+    }
+
+    function cancelReply() {
+        replyingToMsg = null;
+        document.getElementById('replyIndicator').style.display = 'none';
+    }
+
+    function loadUsers() {
+        onSnapshot(collection(db, "users"), (snapshot) => {
+            const allUsers = [];
+            snapshot.forEach(doc => allUsers.push({ id: doc.id, ...doc.data() }));
+            if (!currentUser) return;
+            let contacts = currentUser.isAdmin ? allUsers.filter(u => !u.isAdmin && u.id !== currentUser.id) : allUsers.filter(u => u.isAdmin === true);
+            const container = document.getElementById("chatsList");
+            if (!contacts.length) { container.innerHTML = `<div class="empty-state"><i class="fas fa-users"></i><br/>No contacts yet</div>`; return; }
+            container.innerHTML = contacts.map(c => `<div class="chat-item" data-id="${c.id}" data-name="${escapeHtml(c.name)}"><div class="chat-avatar">${c.name.charAt(0)}</div><div class="chat-details"><div class="chat-name">${escapeHtml(c.name)}</div><div class="phone-badge"><i class="fas fa-phone-alt"></i> ${c.phone}</div></div></div>`).join("");
+            document.querySelectorAll(".chat-item").forEach(el => {
+                el.addEventListener("click", () => {
+                    currentChatWith = { id: el.dataset.id, name: el.dataset.name };
+                    document.getElementById("chatName").innerText = el.dataset.name;
+                    document.getElementById("chatAvatar").innerHTML = el.dataset.name.charAt(0);
+                    cancelReply();
+                    loadMessages(el.dataset.id, el.dataset.name);
+                    document.querySelectorAll(".chat-item").forEach(c => c.classList.remove("active"));
+                    el.classList.add("active");
+                    if (window.innerWidth <= 780) { document.getElementById("sidebar").style.display = "none"; document.querySelector(".main-chat").style.display = "flex"; }
+                });
+            });
+        });
+    }
+
+    function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+
+    document.getElementById("authBtn").onclick = async () => {
+        const name = document.getElementById("authName").value.trim();
+        const phone = document.getElementById("authPhone").value.trim();
+        if (!name || !phone) return alert("Enter both fields");
+        const isAdmin = phone === ADMIN_PHONE;
+        let user = await findUserByPhone(phone);
+        if (!user) {
+            const userId = isAdmin ? "admin_peace" : `user_${Date.now()}`;
+            await saveUser(userId, name, phone, isAdmin);
+            user = { id: userId, name, phone, isAdmin };
+        }
+        currentUser = user;
+        document.getElementById("sidebarUserName").innerText = currentUser.name;
+        document.getElementById("authScreen").style.display = "none";
+        document.getElementById("mainApp").style.display = "flex";
+        loadUsers();
+        
+        document.getElementById("sendBtn").onclick = async () => {
+            const input = document.getElementById("messageInput");
+            const text = input.value.trim();
+            if (text && currentChatWith) {
+                let replyData = null;
+                if (replyingToMsg) {
+                    replyData = {
+                        text: replyingToMsg.text,
+                        senderId: replyingToMsg.senderId,
+                        senderName: replyingToMsg.senderName
+                    };
+                }
+                await sendMessage(currentChatWith.id, text, replyData);
+                input.value = "";
+                cancelReply();
+            }
+        };
+        document.getElementById("messageInput").addEventListener("keypress", (e) => { if (e.key === "Enter") document.getElementById("sendBtn").click(); });
+        document.getElementById("cancelReplyBtn").addEventListener("click", cancelReply);
+    };
+    
+    document.getElementById("backBtn").onclick = () => { document.getElementById("sidebar").style.display = "flex"; document.querySelector(".main-chat").style.display = "none"; };
+    const handleMobile = () => { if (window.innerWidth <= 780) document.getElementById("backBtn").style.display = "flex"; else { document.getElementById("backBtn").style.display = "none"; document.getElementById("sidebar").style.display = "flex"; document.querySelector(".main-chat").style.display = "flex"; } };
+    window.addEventListener("resize", handleMobile); handleMobile();
+</script>
+</body>
+</html>
